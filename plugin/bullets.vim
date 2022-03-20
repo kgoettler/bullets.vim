@@ -452,10 +452,13 @@ fun! s:insert_new_bullet()
     if l:bullet.text_after_bullet ==# ''
       " We don't want to create a new bullet if the previous one was not used,
       " instead we want to delete the empty bullet - like word processors do
-      if g:bullets_delete_last_bullet_if_empty
-        call setline(l:curr_line_num, '')
-        let l:send_return = 0
-      endif
+      "if g:bullets_delete_last_bullet_if_empty
+      "  call setline(l:curr_line_num, '')
+      "  let l:send_return = 0
+      "endif
+      call s:change_bullet_level_and_renumber(1)
+      let l:send_return = 0
+      return ''
     elseif !(l:bullet.bullet_type ==# 'abc' && s:abc2dec(l:bullet.bullet) + 1 > s:abc_max)
 
       let l:next_bullet = s:next_bullet_str(l:bullet)
@@ -995,7 +998,7 @@ augroup TextBulletsMappings
 
   if g:bullets_set_mappings
     " automatic bullets
-    call s:add_local_mapping('inoremap', '<cr>', '<C-]><C-R>=<SID>insert_new_bullet()<cr>')
+    call s:add_local_mapping('inoremap', '<cr>', '<C-]><C-R>=<SID>insert_new_bullet()<cr><C-o>$')
     call s:add_local_mapping('inoremap', '<C-cr>', '<cr>')
 
     call s:add_local_mapping('nnoremap', 'o', ':call <SID>insert_new_bullet()<cr>')
@@ -1009,6 +1012,7 @@ augroup TextBulletsMappings
 
     " Promote and Demote outline level
     call s:add_local_mapping('inoremap', '<C-t>', '<C-o>:BulletDemote<cr>')
+    call s:add_local_mapping('inoremap', '<Tab>', '<C-o>:BulletDemote<cr>')
     call s:add_local_mapping('nnoremap', '>>', ':BulletDemote<cr>')
     call s:add_local_mapping('inoremap', '<C-d>', '<C-o>:BulletPromote<cr>')
     call s:add_local_mapping('nnoremap', '<<', ':BulletPromote<cr>')
